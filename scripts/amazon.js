@@ -1,5 +1,5 @@
 import {products} from "../data/products.js"
-import {cart} from  "../data/cart.js"
+import {addToCart, cart} from  "../data/cart.js"
 
 let productosHTML= ""
 products.forEach(product => {
@@ -48,7 +48,7 @@ products.forEach(product => {
             Agregado
           </div>
 
-          <button class="add-to-cart-button button-primary js-add-to-cart" data-productid="${product.id}">
+          <button class="add-to-cart-button button-primary js-add-to-cart" data-product-Id="${product.id}">
             Agregar al carrito
           </button>
         </div>`
@@ -59,7 +59,7 @@ document.querySelector(".products-grid").innerHTML = productosHTML;
 document.querySelectorAll(".js-add-to-cart").forEach(button => {
     let addedMessageTimeoutId;
     button.addEventListener("click", () => {
-        const productId = button.dataset.productid;
+        const {productId} = button.dataset;
 
         addedMessageTimeoutId = addedDisplay(addedMessageTimeoutId, productId);
         addToCart(productId);
@@ -76,26 +76,6 @@ function addedDisplay (addedMessageTimeoutId, productId){
     const ocultarNoti = setTimeout(()=>aggNoti.style.opacity = "0", 700)
 
     return ocultarNoti;
-}
-
-function addToCart(productId) {
-    let matchingCartItem;
-    const valueSelect = Number(document.querySelector(`.js-quantity-selector-${productId}`).value);
-    cart.forEach(cartItem =>{
-        if (cartItem.id === productId){
-            matchingCartItem = cartItem;
-        }
-    });
-    if (matchingCartItem) {
-        matchingCartItem.quantity += valueSelect;
-    } else {
-        cart.push(
-            {
-                id: productId,
-                quantity: valueSelect
-            }
-        );
-    }
 }
 
 function updateCartQuantity(){
