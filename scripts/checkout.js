@@ -1,7 +1,7 @@
-import {cart, removeFromCart} from "../data/cart.js";
+import {addToCart, cart, removeFromCart, updateCartQuantity} from "../data/cart.js";
 import {products} from "../data/products.js";
 
-
+updateHeaderQuantity();
 
 cart.forEach(cartItem =>{
 
@@ -31,6 +31,8 @@ cart.forEach(cartItem =>{
                   <span class="update-quantity-link link-primary">
                     Update
                   </span>
+                  <input class="quantity-input" hidden="hidden" type="number">
+                  <span class="save-quantity-link link-primary" hidden="hidden" data-product-Id="${matchingProduct.id}">Save</span>
                   <span class="delete-quantity-link link-primary" data-product-Id="${matchingProduct.id}">
                     Delete
                   </span>
@@ -84,4 +86,31 @@ document.querySelectorAll(".delete-quantity-link").forEach((HTMLDelete)=>
     HTMLDelete.addEventListener("click", ()=>{
         removeFromCart(HTMLDelete.dataset.productId);
         document.querySelector(`.js-cart-item-container-${HTMLDelete.dataset.productId}`).remove();
+        updateHeaderQuantity();
     }))
+
+document.querySelectorAll(".update-quantity-link").forEach((HTMLUpdate)=>
+    HTMLUpdate.addEventListener("click", ()=>{
+        HTMLUpdate.previousElementSibling.firstElementChild.style.display = "none"; // Quantity display
+        HTMLUpdate.style.display = "none"; // Quantity update
+        HTMLUpdate.nextElementSibling.style.display="initial"; // Quantity Input
+        HTMLUpdate.nextElementSibling.nextElementSibling.style.display="initial"; // Quantity Save
+    }));
+
+document.querySelectorAll(".save-quantity-link").forEach((HTMLSave)=>{
+    HTMLSave.previousElementSibling.addEventListener("keydown", e => e.key === "Enter" ? saveQuantity(HTMLSave) : false)
+    HTMLSave.addEventListener("click", ()=>saveQuantity(HTMLSave))});
+
+function saveQuantity(HTMLSave){
+    HTMLSave.style.display = "none"; // Quantity save
+    HTMLSave.previousElementSibling.style.display = "none"; // Quantity input
+    HTMLSave.previousElementSibling.previousElementSibling.style.display = "initial"; // Quantity update
+    HTMLSave.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.style.display = "initial"; // Quantity display
+    addToCart(HTMLSave.dataset.productId, Number(HTMLSave.previousElementSibling.value)); // productId, QuantityInput
+    HTMLSave.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.textContent = updateCartQuantity(HTMLSave.dataset.productId); // Quantity display update
+    updateHeaderQuantity();
+}
+
+function updateHeaderQuantity(){
+    document.querySelector('.return-to-home-link').textContent = `${updateCartQuantity()} items`;
+}

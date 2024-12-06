@@ -1,9 +1,10 @@
 import {products} from "../data/products.js"
-import {addToCart, cart} from  "../data/cart.js"
+import {addToCart, updateCartQuantity} from "../data/cart.js"
 
-let productosHTML= ""
+document.querySelector(".cart-quantity").textContent = updateCartQuantity();
+
 products.forEach(product => {
-    productosHTML += `
+    document.querySelector(".products-grid").innerHTML += `
     <div class="product-container">
           <div class="product-image-container">
             <img class="product-image"
@@ -54,16 +55,15 @@ products.forEach(product => {
         </div>`
 })
 
-document.querySelector(".products-grid").innerHTML = productosHTML;
-
 document.querySelectorAll(".js-add-to-cart").forEach(button => {
     let addedMessageTimeoutId;
     button.addEventListener("click", () => {
         const {productId} = button.dataset;
+        const valueSelect = Number(document.querySelector(`.js-quantity-selector-${productId}`).value);
 
         addedMessageTimeoutId = addedDisplay(addedMessageTimeoutId, productId);
-        addToCart(productId);
-        updateCartQuantity();
+        addToCart(productId, valueSelect);
+        document.querySelector(".cart-quantity").textContent = updateCartQuantity();
     })
 })
 
@@ -76,13 +76,4 @@ function addedDisplay (addedMessageTimeoutId, productId){
     const ocultarNoti = setTimeout(()=>aggNoti.style.opacity = "0", 700)
 
     return ocultarNoti;
-}
-
-function updateCartQuantity(){
-    let cartQuantity = 0;
-    cart.forEach(cartItem =>{
-        cartQuantity += cartItem.quantity;
-    });
-
-    document.querySelector(".cart-quantity").textContent = cartQuantity;
 }
