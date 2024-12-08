@@ -4,7 +4,9 @@ import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
 import "../data/dayJsLocale.js"
 import {deliveryOptions} from "../data/deliveryOptions.js";
 import {centsToDollar} from "../utilities/moneyCurrency.js";
+import {summaryCalc} from "../data/summary.js"
 
+summaryCalc();
 updateHeaderQuantity();
 
 cart.forEach(cartItem =>{
@@ -26,25 +28,25 @@ cart.forEach(cartItem =>{
                   ${matchingProduct.name}
                 </div>
                 <div class="product-price">
-                  ${(matchingProduct.priceCents / 100).toFixed(2)}
+                  ${centsToDollar(matchingProduct.priceCents)}
                 </div>
                 <div class="product-quantity">
                   <span>
-                    Quantity: <span class="quantity-label">${cartItem.quantity}</span>
+                    Unidades: <span class="quantity-label">${cartItem.quantity}</span>
                   </span>
                   <span class="update-quantity-link link-primary">
-                    Update
+                    Actualizar
                   </span>
                   <input class="quantity-input" hidden="hidden" type="number">
-                  <span class="save-quantity-link link-primary" hidden="hidden" data-product-Id="${matchingProduct.id}">Save</span>
+                  <span class="save-quantity-link link-primary" hidden="hidden" data-product-Id="${matchingProduct.id}">Guardar</span>
                   <span class="delete-quantity-link link-primary" data-product-Id="${matchingProduct.id}">
-                    Delete
+                    Borrar
                   </span>
                 </div>
               </div>
               <div class="delivery-options">
                 <div class="delivery-options-title">
-                  Choose a delivery option:
+                  Escoge opcion de envío:
                 </div>
                 ${generateDeliveryOptions(matchingProduct, cartItem)}
               </div>
@@ -69,6 +71,7 @@ document.querySelectorAll('.delivery-option').forEach(optionInput =>
             }
         })
         e.currentTarget.firstElementChild.checked = true;
+        summaryCalc()
         localCartSave()
     }))
 
@@ -86,7 +89,7 @@ function generateDeliveryOptions(matchingProduct, cartItem) {
               ${currentTime.add(dOption.deliveryDays, 'days').format('dddd, MMMM D')}
             </div>
             <div class="delivery-option-price">
-              ${centsToDollar(dOption.priceCents) == 0 ? "Gratis" : '$'+centsToDollar(dOption.priceCents)} - Envio
+              ${dOption.priceCents === 0 ? "Gratis" : centsToDollar(dOption.priceCents)} - Envio
             </div>
           </div>
         </div>
@@ -99,6 +102,7 @@ document.querySelectorAll(".delete-quantity-link").forEach((HTMLDelete)=>
     HTMLDelete.addEventListener("click", ()=>{
         removeFromCart(HTMLDelete.dataset.productId);
         document.querySelector(`.js-cart-item-container-${HTMLDelete.dataset.productId}`).remove();
+        summaryCalc();
         updateHeaderQuantity();
     }))
 
@@ -120,10 +124,12 @@ function saveQuantity(HTMLSave){
     HTMLSave.previousElementSibling.previousElementSibling.style.display = "initial"; // Quantity update
     HTMLSave.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.style.display = "initial"; // Quantity display
     addToCart(HTMLSave.dataset.productId, Number(HTMLSave.previousElementSibling.value)); // productId, QuantityInput
+    !!updateCartQuantity(HTMLSave.dataset.productId) === false ? document.querySelector(`.js-cart-item-container-${HTMLSave.dataset.productId}`).remove() : // si la funcion llamda nos devuelve false, ejecutar ternario ?
     HTMLSave.previousElementSibling.previousElementSibling.previousElementSibling.firstElementChild.textContent = updateCartQuantity(HTMLSave.dataset.productId); // Quantity display update
     updateHeaderQuantity();
+    summaryCalc();
 }
 
-function updateHeaderQuantity(){
+function updateHeaderQuantity(){ //actualiza el contenido HTML header
     document.querySelector('.return-to-home-link').textContent = `${updateCartQuantity()} items`;
 }
