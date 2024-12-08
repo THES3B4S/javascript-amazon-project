@@ -55,10 +55,27 @@ cart.forEach(cartItem =>{
     `
 });
 
-function updateDeliveryOptions(cartItem) {
-    const selectedOption = deliveryOptions.find(dOption=> dOption.id === cartItem.idDelivery);
+function updateDeliveryOptions(cartItem, deliverOption) {
     const currentTime = dayjs();
-    return currentTime.add(selectedOption.deliveryDays, 'days').format('dddd, MMMM D')
+
+    if (deliverOption){
+        for (let i = 1 ; i <= deliverOption; i++) {
+            if (currentTime.add(i, 'days').format('dddd') === 'Domingo') {
+                deliverOption++;
+            }
+        }
+        return currentTime.add(deliverOption, 'days').format('dddd, MMMM D')
+    }
+
+    let selectedOption = deliveryOptions.find(dOption=> dOption.id === cartItem.idDelivery).deliveryDays;
+
+    for (let i = 1 ; i <= selectedOption; i++) {
+        if (currentTime.add(i, 'days').format('dddd') === 'Domingo') {
+            selectedOption++;
+        }
+    }
+
+    return currentTime.add(selectedOption, 'days').format('dddd, MMMM D')
 }
 
 document.querySelectorAll('.delivery-option').forEach(optionInput =>
@@ -86,7 +103,7 @@ function generateDeliveryOptions(matchingProduct, cartItem) {
           <input type="radio" ${isCkeck ? "checked" : ""} class="delivery-option-input js-delivery-option-input-${matchingProduct.id}" name="delivery-option-1-${matchingProduct.id}"">
           <div>
             <div class="delivery-option-date">
-              ${currentTime.add(dOption.deliveryDays, 'days').format('dddd, MMMM D')}
+              ${updateDeliveryOptions(null, dOption.deliveryDays)}
             </div>
             <div class="delivery-option-price">
               ${dOption.priceCents === 0 ? "Gratis" : centsToDollar(dOption.priceCents)} - Envio
