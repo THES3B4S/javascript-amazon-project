@@ -1,12 +1,12 @@
 import {cart, updateCartQuantity} from "./cart.js";
 import {centsToDollar} from "../utilities/moneyCurrency.js";
-import {products} from "./products.js";
+import {getProduct} from "./products.js";
 import {deliveryOptions} from "./deliveryOptions.js";
 
 export function summaryCalc(){
     let summaryProducts = 0;
     cart.forEach(cartItem => {
-        const matchingProduct = products.find(product=>product.id === cartItem.id);
+        const matchingProduct = getProduct(cartItem.id);
         summaryProducts += (matchingProduct.priceCents * cartItem.quantity);
     })
 

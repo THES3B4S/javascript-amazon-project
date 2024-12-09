@@ -1,5 +1,5 @@
 import {addToCart, cart, localCartSave, removeFromCart, updateCartQuantity} from "../data/cart.js";
-import {products} from "../data/products.js";
+import {getProduct} from "../data/products.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
 import "../data/dayJsLocale.js"
 import {deliveryOptions} from "../data/deliveryOptions.js";
@@ -11,7 +11,7 @@ updateHeaderQuantity();
 
 cart.forEach(cartItem =>{
 
-    let matchingProduct = products.find(product => product.id === cartItem.id);
+    let matchingProduct = getProduct(cartItem.id);
 
     document.querySelector('.order-summary').innerHTML +=
         `
