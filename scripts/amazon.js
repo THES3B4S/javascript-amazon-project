@@ -1,6 +1,5 @@
 import {products} from "../data/products.js"
 import {addToCart, updateCartQuantity} from "../data/cart.js"
-import {centsToDollar} from "../utilities/moneyCurrency.js"
 
 document.querySelector(".cart-quantity").textContent = updateCartQuantity();
 
@@ -42,6 +41,8 @@ products.forEach(product => {
               <option value="10">10</option>
             </select>
           </div>
+          
+          ${product.extraInfoHTML()}
 
           <div class="product-spacer"></div>
 
