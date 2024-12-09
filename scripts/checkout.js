@@ -28,7 +28,7 @@ cart.forEach(cartItem =>{
                   ${matchingProduct.name}
                 </div>
                 <div class="product-price">
-                  ${centsToDollar(matchingProduct.priceCents)}
+                  ${matchingProduct.getPriceDollars()}
                 </div>
                 <div class="product-quantity">
                   <span>
