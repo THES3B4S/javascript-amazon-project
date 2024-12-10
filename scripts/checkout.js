@@ -5,8 +5,8 @@ import "../data/dayJsLocale.js"
 import {deliveryOptions} from "../data/deliveryOptions.js";
 import {centsToDollar} from "../utilities/moneyCurrency.js";
 import {summaryCalc} from "../data/summary.js"
+import {loadCart} from "../data/cart.js";
 
-loadProducts(renderCheckoutPage)
 
 function renderCheckoutPage() {
 
@@ -156,3 +156,40 @@ function renderCheckoutPage() {
     }
 
 }
+
+
+new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un resolve o reject
+    loadProducts(() =>{ // llamamos la funcion loadProducts la cual acepta 1 parametro el cual es un callback, se ejecutara como ultima parte del codigo
+        resolve('products loaded'); // como el callback esta a lo ultimo, se ejecuta este bloque una vez haya terminado, retorna resolve a la promesa
+    });
+}).then((resolve) =>{// usamos .then para realizar el siguiente paso una vez la primera promesa se haya cumplido / si queremos podemos recibir el valor del resolve anterior
+    console.log(resolve) //aqui mostramos en consola el resolve que nos dio la primera promise: "products loaded"
+    return new Promise((resolve, reject) => { // solo puede haber un resolve por promesa asi que lo que hacemos es crear otra promesa y retornarla, en ella va uno funcion la cual acepta un callback
+        loadCart(() =>{ // como se observa acepta una function, se ejecutara el bloque de abajo
+            resolve('all completed'); // indicamos el resolve para cumplir la promesa
+        });
+    })
+}).then((resolve)=>{ // por ultimo volvemos a usar .then y recolectamos el resolve anterior
+    console.log(resolve) // mostramos el resolve de la promesa anterior en consola: "all completed"
+    renderCheckoutPage(); // renderizamos el contenido debido a que ya esta almacenada la informacion en local y ninguna variable nos hara falta
+})
+
+
+/*
+Promise.all([ //Promise.all crea un array de promesas las cuales se iran ejecutando en orden, los resolves o reject seran devueltos en forma de array
+    new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un resolve o reject
+        loadProducts(() =>{ // llamamos la funcion loadProducts la cual acepta 1 parametro el cual es un callback, se ejecutara como ultima parte del codigo
+            resolve('products loaded'); // como el callback esta a lo ultimo, se ejecuta este bloque una vez haya terminado, retorna resolve a la promesa
+        });
+    }),
+    new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un resolve o reject
+        loadCart(() =>{ // como se observa loadCart() acepta una function, se ejecutara el bloque de abajo
+            resolve('all completed'); // indicamos el resolve para cumplir la promesa
+        });
+    })
+
+]).then((resolves) => { // despues de ejecutada todas las promesas podemos hacer un siguiente paso con .then(resolves) que tambien nos entrega resolve o reject, esto en un array de resolves
+    console.log(resolves); //mostramos en consola el array de resolves
+    renderCheckoutPage(); // renderizamos el contenido debido a que ya esta almacenada la informacion en local y ninguna variable nos hara falta
+});
+ */

@@ -70,3 +70,13 @@ export function updateCartQuantity(productId){ // funcion que acepta como parame
 export function localCartSave(){ //funcion para pasar el objeto cart como un JSON string, para despues guardarlo en local, cuando lo usemos tenemos que hacer un JSON.parse
     localStorage.setItem("cart", JSON.stringify(cart));
 }
+
+export function loadCart(Fn){
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://supersimplebackend.dev/cart');
+    xhr.send()
+    xhr.addEventListener('load', () => {
+        console.log(xhr.response)
+        Fn()
+    })
+}
