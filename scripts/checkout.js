@@ -6,6 +6,7 @@ import {deliveryOptions} from "../data/deliveryOptions.js";
 import {centsToDollar} from "../utilities/moneyCurrency.js";
 import {summaryCalc} from "../data/summary.js"
 import {loadCart} from "../data/cart.js";
+import {orderC} from "../data/orders.js";
 
 
 function renderCheckoutPage() {
@@ -15,7 +16,7 @@ function renderCheckoutPage() {
 
     cart.forEach(cartItem => {
 
-        let matchingProduct = getProduct(cartItem.id);
+        let matchingProduct = getProduct(cartItem.productId);
 
         document.querySelector('.order-summary').innerHTML +=
             `
@@ -86,7 +87,7 @@ function renderCheckoutPage() {
         optionInput.addEventListener('click', e => {
             document.querySelectorAll(`.js-delivery-option-input-${optionInput.dataset.cartId}`).forEach(cartId => cartId.checked = false)
             cart.forEach(cartItem => {
-                if (cartItem.id === optionInput.dataset.cartId) {
+                if (cartItem.productId === optionInput.dataset.cartId) {
                     cartItem.idDelivery = optionInput.dataset.deliverId;
                     document.querySelector(`.js-cart-item-container-${optionInput.dataset.cartId}`).firstElementChild.textContent = `Fecha de entrega: ${updateDeliveryOptions(cartItem)}`;
                 }
@@ -117,6 +118,21 @@ function renderCheckoutPage() {
         })
         return deliveryOptionsHTML;
     }
+
+    document.querySelector('.place-order-button').addEventListener('click', async () => {
+        if (cart.length){ // si existe algun elemento en el carrito, ejecuta el bloque de abajo / truthy
+        try{ // debido a que es posible que sea rechazado una request usamos try, esto evitara que el programa se detenga
+            const response = await fetch('https://supersimplebackend.dev/orders', {
+                method: 'POST', //metodo por el cual enviaremos el fetch GET/POST/UPDATE/DELETE
+                headers: {'Content-Type': 'application/json'}, //tipo de contenido que vamos a enviar al backend
+                body: JSON.stringify({cart: cart}) //la propiedad y la variable
+            })
+                const order = await response.json() //usamos await para esperar a que se genere el json
+                orderC.createOrder(order); // llamamos al objeto y usamos el metodo createOrder y le pasamos la respuesta json que nos dio el response
+                window.location.href = 'orders.html'; // cambiamos el link de la pagina por orders.html
+        } catch (error) {console.log('error inesperado', error)} // en caso de que haya algun error ejecutar esta linea
+        }
+    })
 
     document.querySelectorAll(".delete-quantity-link").forEach((HTMLDelete) =>
         HTMLDelete.addEventListener("click", () => {

@@ -6,13 +6,13 @@ function Cart(localStorageKey) {
             const unitsLeft = units - this.updateCartQuantity(productId)
             let matchingCartItem; //variable para guardar el matching item que nos otorgara el bloque de abajo
             this.cartItems.forEach(cartItem => {
-                if (cartItem.id === productId) { //si encuentras el product id en el carrito, asignalo a la var de arriba
+                if (cartItem.productId === productId) { //si encuentras el product id en el carrito, asignalo a la var de arriba
                     matchingCartItem = cartItem;
                 }
             });
             if (matchingCartItem) { //ejecuta si el valor es truthy (existe el matchingCartItem)
                 if ((matchingCartItem.quantity + unitsLeft) < 0) { //verifica si la suma de las unidades negativas ingresadas por el input son mayores a las habidas en el carrito, en caso de que sea asi
-                    this.removeFromCart(matchingCartItem.id); // elimina el producto del carrito
+                    this.removeFromCart(matchingCartItem.productId); // elimina el producto del carrito
                 } else if (units === 0) { // en caso de que units(input) sea 0 no hacer nada
                     return
                 } else {
@@ -21,7 +21,7 @@ function Cart(localStorageKey) {
             } else { // si el producto no se encontro en el carrito agrega el producto al carrito y asigna por defecto el envio gratis
                 this.cartItems.push(
                     {
-                        id: productId,
+                        productId: productId,
                         quantity: units,
                         idDelivery: '1'
                     }
@@ -32,7 +32,7 @@ function Cart(localStorageKey) {
         },
 
         removeFromCart(productId) { //funcion que acepta como parametro el product.id
-            this.cartItems.splice(cart.findIndex(cartItem => cartItem.id === productId), 1); //recorre el carrito y en el parametro 1 va el index, en este caso encontramos el index con findIndex(condicion). parametro 2 campos a borrar: 1
+            this.cartItems.splice(cart.findIndex(cartItem => cartItem.productId === productId), 1); //recorre el carrito y en el parametro 1 va el index, en este caso encontramos el index con findIndex(condicion). parametro 2 campos a borrar: 1
 
             this.saveToStorage(); //guarda en memoria local los cambios de la variable cart
         },
@@ -40,7 +40,7 @@ function Cart(localStorageKey) {
         updateCartQuantity(productId) { // funcion que acepta como parametro el product.id
             let cartQuantity; // declaramos variable para poder retornarla y asignarla en bloques internos
             if (productId) { // si recibio un parametro truthy ejecuta el bloque de abajo
-                cartQuantity = this.cartItems.find(cartItem => cartItem.id === productId); // encuentra el carrito que coincida con el productid otorgado por el parametro
+                cartQuantity = this.cartItems.find(cartItem => cartItem.productId === productId); // encuentra el carrito que coincida con el productid otorgado por el parametro
                 if (cartQuantity) { // si el valor es truthy
                     return cartQuantity.quantity; // devuelve la cantidad de productos encontrados en el carrito por productid
                 } else { // en caso de no encontrar nada devolver false
@@ -58,12 +58,12 @@ function Cart(localStorageKey) {
                 this.cartItems =
                     [
                         {
-                            id: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
+                            productId: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
                             quantity: 2,
                             idDelivery: '1',
                         },
                         {
-                            id: "15b6fc6f-327a-4ec4-896f-486349e85a3d",
+                            productId: "15b6fc6f-327a-4ec4-896f-486349e85a3d",
                             quantity: 1,
                             idDelivery: '2',
                         }

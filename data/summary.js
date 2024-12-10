@@ -6,7 +6,7 @@ import {deliveryOptions} from "./deliveryOptions.js";
 export function summaryCalc(){
     let summaryProducts = 0;
     cart.forEach(cartItem => {
-        const matchingProduct = getProduct(cartItem.id);
+        const matchingProduct = getProduct(cartItem.productId);
         summaryProducts += (matchingProduct.priceCents * cartItem.quantity);
     })
 
