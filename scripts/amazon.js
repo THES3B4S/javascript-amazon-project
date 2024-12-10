@@ -1,10 +1,13 @@
-import {products} from "../data/products.js"
+import {products, loadProducts} from "../data/products.js"
 import {addToCart, updateCartQuantity} from "../data/cart.js"
 
-document.querySelector(".cart-quantity").textContent = updateCartQuantity();
+loadProducts(renderMainPage)
+function renderMainPage() {
 
-products.forEach(product => {
-    document.querySelector(".products-grid").innerHTML += `
+    document.querySelector(".cart-quantity").textContent = updateCartQuantity();
+
+    products.forEach(product => {
+        document.querySelector(".products-grid").innerHTML += `
     <div class="product-container">
           <div class="product-image-container">
             <img class="product-image"
@@ -55,27 +58,29 @@ products.forEach(product => {
             Agregar al carrito
           </button>
         </div>`
-})
-
-document.querySelectorAll(".js-add-to-cart").forEach(button => {
-    let addedMessageTimeoutId;
-    button.addEventListener("click", () => {
-        const {productId} = button.dataset;
-        const valueSelect = Number(document.querySelector(`.js-quantity-selector-${productId}`).value);
-
-        addedMessageTimeoutId = addedDisplay(addedMessageTimeoutId, productId);
-        addToCart(productId, valueSelect);
-        document.querySelector(".cart-quantity").textContent = updateCartQuantity();
     })
-})
 
-function addedDisplay (addedMessageTimeoutId, productId){
-    if (addedMessageTimeoutId) {
-        clearTimeout(addedMessageTimeoutId);
+    document.querySelectorAll(".js-add-to-cart").forEach(button => {
+        let addedMessageTimeoutId;
+        button.addEventListener("click", () => {
+            const {productId} = button.dataset;
+            const valueSelect = Number(document.querySelector(`.js-quantity-selector-${productId}`).value);
+
+            addedMessageTimeoutId = addedDisplay(addedMessageTimeoutId, productId);
+            addToCart(productId, valueSelect);
+            document.querySelector(".cart-quantity").textContent = updateCartQuantity();
+        })
+    })
+
+    function addedDisplay(addedMessageTimeoutId, productId) {
+        if (addedMessageTimeoutId) {
+            clearTimeout(addedMessageTimeoutId);
+        }
+        const aggNoti = document.querySelector(`.js-added-to-cart-${productId}`);
+        aggNoti.style.opacity = "1";
+        const ocultarNoti = setTimeout(() => aggNoti.style.opacity = "0", 700)
+
+        return ocultarNoti;
     }
-    const aggNoti = document.querySelector(`.js-added-to-cart-${productId}`);
-    aggNoti.style.opacity = "1";
-    const ocultarNoti = setTimeout(()=>aggNoti.style.opacity = "0", 700)
 
-    return ocultarNoti;
 }
