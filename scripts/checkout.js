@@ -157,6 +157,22 @@ function renderCheckoutPage() {
 
 }
 
+async function loadPage(){ // con async podemos convertir una funcion en una promesa y su codigo es lineal, primero se ejecutan en orden los awaits y despues el resto del codigo
+    await loadProductsFetch(); //await solo puede ser usado en promesas. ejecutar y esperar a que se comnplete la funcion asincronica para poder continuar con el resto del bloque
+
+    await new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un resolve o reject / el await espera a que se cumpla la promesa para continuar con el codigo
+        loadCart(() =>{ // como se observa loadCart() acepta una function, se ejecutara el bloque de abajo
+            resolve(); // indicamos el resolve para cumplir la promesa
+        });
+    });// si necesitamos acceder al valor del resolve podemos asignar la promesa a una variable, y la retornamos en la async function principal
+
+    renderCheckoutPage() //funcion local la cual ya se correra debido a que ya se ejecutaron todas las funciones asincronicas
+
+    return 'all process complete' //retorna como resolve este string
+}
+loadPage().then(resolve => console.log(resolve)); //debido a que la function ahora es una promesa podemos usar .then para indicar que hacer despues de cumplida la promesa, en este caso solo mostraremos el resolve en consola: all process complete
+
+/*
 Promise.all([ //Promise.all crea un array de promesas las cuales se iran ejecutando en orden, los resolves o reject seran devueltos en forma de array
     loadProductsFetch(), //debido a que la funcion fetch ya en si es una promesa podemos retornarla y contara como una.
     new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un resolve o reject
@@ -169,6 +185,7 @@ Promise.all([ //Promise.all crea un array de promesas las cuales se iran ejecuta
     console.log(resolves); //mostramos en consola el array de resolves
     renderCheckoutPage(); // renderizamos el contenido debido a que ya esta almacenada la informacion en local y ninguna variable nos hara falta
 });
+ */
 
 /*
 new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un resolve o reject
