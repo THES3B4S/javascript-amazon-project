@@ -158,13 +158,19 @@ function renderCheckoutPage() {
 }
 
 async function loadPage(){ // con async podemos convertir una funcion en una promesa y su codigo es lineal, primero se ejecutan en orden los awaits y despues el resto del codigo
-    await loadProductsFetch(); //await solo puede ser usado en promesas. ejecutar y esperar a que se comnplete la funcion asincronica para poder continuar con el resto del bloque
 
-    await new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un resolve o reject / el await espera a que se cumpla la promesa para continuar con el codigo
-        loadCart(() =>{ // como se observa loadCart() acepta una function, se ejecutara el bloque de abajo
-            resolve(); // indicamos el resolve para cumplir la promesa
-        });
-    });// si necesitamos acceder al valor del resolve podemos asignar la promesa a una variable, y la retornamos en la async function principal
+    try{ // encapsulamos el bloque de codigo que posiblemente por errores de conexion o de parte del servidor puedan dar error
+        await loadProductsFetch(); //await solo puede ser usado en promesas. ejecutar y esperar a que se comnplete la funcion asincronica para poder continuar con el resto del bloque
+
+        await new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un resolve o reject / el await espera a que se cumpla la promesa para continuar con el codigo
+            loadCart(() =>{ // como se observa loadCart() acepta una function, se ejecutara el bloque de abajo
+                resolve(); // indicamos el resolve para cumplir la promesa
+            });
+        });// si necesitamos acceder al valor del resolve podemos asignar la promesa a una variable, y la retornamos en la async function principal
+
+    } catch (error){ //tomamos el error del bloque try en caso de que lo haya..
+        console.log('unexpected error, please try again later')
+    }
 
     renderCheckoutPage() //funcion local la cual ya se correra debido a que ya se ejecutaron todas las funciones asincronicas
 

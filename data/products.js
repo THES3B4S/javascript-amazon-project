@@ -79,7 +79,9 @@ export function loadProductsFetch(){
                 return new Product(productDetails);
             }
         });
-    })
+    })//catch(error =>{ //podemos directamente tomar el error del fetch o podemos tambien tomarlo en el async await con un try catch
+        // console.log('unexpected error, please try again later')
+        //})
     return promise
 }
 
@@ -97,7 +99,11 @@ export function loadProducts(Fn){
                 return new Product(productDetails);
             }
         })
-        Fn()
+        Fn() //callback
+    })
+
+    xhr.addEventListener('error', error => {
+        console.log('unexpected error, please try again later');
     })
 }
 
