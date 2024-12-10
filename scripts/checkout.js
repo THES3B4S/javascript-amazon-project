@@ -1,5 +1,5 @@
 import {addToCart, cart, localCartSave, removeFromCart, updateCartQuantity} from "../data/cart.js";
-import {getProduct, loadProducts} from "../data/products.js";
+import {getProduct, loadProducts, loadProductsFetch} from "../data/products.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
 import "../data/dayJsLocale.js"
 import {deliveryOptions} from "../data/deliveryOptions.js";
@@ -157,7 +157,20 @@ function renderCheckoutPage() {
 
 }
 
+Promise.all([ //Promise.all crea un array de promesas las cuales se iran ejecutando en orden, los resolves o reject seran devueltos en forma de array
+    loadProductsFetch(), //debido a que la funcion fetch ya en si es una promesa podemos retornarla y contara como una.
+    new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un resolve o reject
+        loadCart(() =>{ // como se observa loadCart() acepta una function, se ejecutara el bloque de abajo
+            resolve('all completed'); // indicamos el resolve para cumplir la promesa
+        });
+    })
 
+]).then((resolves) => { // despues de ejecutada todas las promesas podemos hacer un siguiente paso con .then(resolves) que tambien nos entrega resolve o reject, esto en un array de resolves
+    console.log(resolves); //mostramos en consola el array de resolves
+    renderCheckoutPage(); // renderizamos el contenido debido a que ya esta almacenada la informacion en local y ninguna variable nos hara falta
+});
+
+/*
 new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un resolve o reject
     loadProducts(() =>{ // llamamos la funcion loadProducts la cual acepta 1 parametro el cual es un callback, se ejecutara como ultima parte del codigo
         resolve('products loaded'); // como el callback esta a lo ultimo, se ejecuta este bloque una vez haya terminado, retorna resolve a la promesa
@@ -173,7 +186,7 @@ new Promise((resolve, reject) => { //creamos una promesa la cual nos devuelve un
     console.log(resolve) // mostramos el resolve de la promesa anterior en consola: "all completed"
     renderCheckoutPage(); // renderizamos el contenido debido a que ya esta almacenada la informacion en local y ninguna variable nos hara falta
 })
-
+ */
 
 /*
 Promise.all([ //Promise.all crea un array de promesas las cuales se iran ejecutando en orden, los resolves o reject seran devueltos en forma de array
