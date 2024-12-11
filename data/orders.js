@@ -20,6 +20,10 @@ class Order {
         this.saveOrderToLocal();
     }
 
+    getOrderById(id) {
+        return this.orders.find(order => order.id === id);
+    }
+
     getTotalCostDollars(orderId) {
         if (orderId){
             return centsToDollar(this.orders.find((order) => order.id == orderId).totalCostCents);

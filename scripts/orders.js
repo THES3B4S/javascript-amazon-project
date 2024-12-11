@@ -1,5 +1,6 @@
 import {orderC} from "../data/orders.js";
-import {getProduct, loadProductsFetch} from "../data/products.js";
+import {getProduct, loadProductsFetch, products} from "../data/products.js";
+import {addToCart, updateCartQuantity} from "../data/cart.js";
 
 loadProductsFetch().then(renderOrderPage)
 
@@ -27,13 +28,12 @@ function renderOrderPage() {
             </div>
           </div>
 
-          ${orderProductDetails(order.products)}
+          ${orderProductDetails(order.products, order.id)}
         </div>
     `
     })
-    document.querySelector('.orders-grid').innerHTML = orderContainerHTML;
 
-    function orderProductDetails(orderProducts) {
+    function orderProductDetails(orderProducts, orderId) {
         let productDetailsHTML= ''
         orderProducts.forEach(product => {
             const matchingProduct = getProduct(product.productId)
@@ -53,14 +53,14 @@ function renderOrderPage() {
               <div class="product-quantity">
                 Unidades: ${product.quantity}
               </div>
-              <button class="buy-again-button button-primary">
+              <button class="buy-again-button button-primary" data-product-Id="${product.productId}">
                 <img class="buy-again-icon" src="images/icons/buy-again.png">
-                <span class="buy-again-message">Compra de nuevo</span>
+                <span class="buy-again-message"">Compra de nuevo</span>
               </button>
             </div>
 
             <div class="product-actions">
-              <a href="tracking.html">
+              <a href="tracking.html?orderId=${orderId}&productId=${matchingProduct.id}">
                 <button class="track-package-button button-secondary">
                   Localizar paquete
                 </button>
@@ -73,5 +73,15 @@ function renderOrderPage() {
         return productDetailsHTML
     }
 
+
+    document.querySelector('.orders-grid').innerHTML = orderContainerHTML;
+
+    document.querySelectorAll('.buy-again-button').forEach((button) => {
+        button.addEventListener('click', () => {
+            const productId = button.dataset.productId
+            addToCart(productId,1)
+            document.querySelector('.cart-quantity').textContent = updateCartQuantity()
+        })
+    })
 }
 

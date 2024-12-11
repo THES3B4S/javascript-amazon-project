@@ -4,10 +4,14 @@ import {addToCart, updateCartQuantity} from "../data/cart.js"
 loadProducts(renderMainPage)
 function renderMainPage() {
 
+    renderProductsGrid(products)
+
     document.querySelector(".cart-quantity").textContent = updateCartQuantity();
 
-    products.forEach(product => {
-        document.querySelector(".products-grid").innerHTML += `
+    function renderProductsGrid(productsArray) {
+        let productsGrid = '';
+        productsArray.forEach(product => {
+            productsGrid += `
     <div class="product-container">
           <div class="product-image-container">
             <img class="product-image"
@@ -58,6 +62,25 @@ function renderMainPage() {
             Agregar al carrito
           </button>
         </div>`
+        })
+
+        document.querySelector(".products-grid").innerHTML = productsGrid;
+
+    }
+
+    const url = new URL(window.location.href);
+    let urlSearch = url.searchParams.get('search') ?
+        url.searchParams.get('search').replace(/\s+/g, '').toLowerCase() : null;
+    if (urlSearch) {
+        const filteredArray = products.filter(product=> {
+            return product.name.replace(/\s+/g, '').toLowerCase().includes(urlSearch) ||
+                product.getKeyWordsString().toLowerCase().includes(urlSearch); // como ya el metodo nos devuelve el string sin espacios no hay necesidad de usar el replace nuevamente
+        });
+        renderProductsGrid(filteredArray);
+    }
+    document.querySelector('.search-button').addEventListener('click', (e) => {
+        const searchInput = document.querySelector('.search-bar').value;
+        window.location.href = `amazon.html?search=${searchInput}`;
     })
 
     document.querySelectorAll(".js-add-to-cart").forEach(button => {

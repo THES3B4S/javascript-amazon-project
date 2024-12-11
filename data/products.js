@@ -21,6 +21,10 @@ class Product {
         this.keywords = productDetails.keywords;
     }
 
+    getKeyWordsString(){
+        return this.keywords.join('').replace(/\s+/g, '');
+    }
+
     getStartsUrl(){
         return `images/ratings/rating-${this.rating.stars * 10}.png`
     }
