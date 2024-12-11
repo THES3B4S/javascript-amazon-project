@@ -1,5 +1,6 @@
 import {orderC} from "../data/orders.js";
 import {getProduct, loadProductsFetch} from "../data/products.js";
+import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
 
 loadProductsFetch().then(renderTrackingPage)
 
@@ -10,6 +11,8 @@ function renderTrackingPage() {
     const order = orderC.getOrderById(url.searchParams.get("orderId"));
 
     const matchingProduct = order.products.find(productDetails => productDetails.productId === product.id);
+
+    const timeDiff = (dayjs().diff(order.orderTime)) / (dayjs(matchingProduct.estimatedDeliveryTime).diff(order.orderTime)) * 100
 
     document.querySelector('.order-tracking').innerHTML = `
         <a class="back-to-orders-link link-primary" href="orders.html">
@@ -30,20 +33,22 @@ function renderTrackingPage() {
 
         <img class="product-image" src="${product.image}">
 
+
         <div class="progress-labels-container">
-          <div class="progress-label">
+          <div class="progress-label ${timeDiff<50 ? 'current-status' : ''}">
             Preparando
           </div>
-          <div class="progress-label current-status">
+          <div class="progress-label ${timeDiff>49 ? 'current-status' : ''}">
             Enviado
           </div>
-          <div class="progress-label">
+          <div class="progress-label ${timeDiff>=100 ? 'current-status' : ''}">
             Entregado
           </div>
         </div>
-
+        
+        
         <div class="progress-bar-container">
-          <div class="progress-bar"></div>
+          <div class="progress-bar" style="${'width:' + timeDiff + "px"}" "></div>
         </div>
 `;
 
